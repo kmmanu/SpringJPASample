@@ -23,7 +23,7 @@ public class OrderPersistenceTests {
 	@Transactional
 	public void testSaveOrderWithItems() throws Exception {
 		Order order = new Order();
-		order.getItems().add(new Item());
+		order.addItem(new Item());
 		entityManager.persist(order);
 		entityManager.flush();
 		assertNotNull(order.getId());

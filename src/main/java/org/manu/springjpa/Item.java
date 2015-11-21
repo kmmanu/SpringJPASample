@@ -1,16 +1,13 @@
 
 package org.manu.springjpa;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 /**
  * An item in an order
  */
 @Entity
+@Table(name="T_ITEM")
 public class Item {
 	
 	@Id
@@ -18,6 +15,7 @@ public class Item {
 	private Long id;
 	
 	@ManyToOne
+	@JoinColumn(name="ORDER_ID")
 	private Order order;
 
 	private String product;
@@ -31,6 +29,10 @@ public class Item {
 	 */
 	public Order getOrder() {
 		return order;
+	}
+
+	void setOrder(Order order) {
+		this.order = order;
 	}
 
 	/**

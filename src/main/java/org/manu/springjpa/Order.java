@@ -26,7 +26,6 @@ public class Order {
 	private String customer;
 	
 	@OneToMany(cascade=CascadeType.ALL)
-	@JoinColumn(name="ORDER_ID")
 	private Collection<Item> items = new LinkedHashSet<Item>();
 
 	/**
@@ -55,6 +54,11 @@ public class Order {
 	 */
 	public void setItems(Collection<Item> items) {
 		this.items = items;
+	}
+
+	public void addItem(Item item){
+		item.setOrder(this);
+		items.add(item);
 	}
 
 	/**
