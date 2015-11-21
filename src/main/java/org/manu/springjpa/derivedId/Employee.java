@@ -9,6 +9,13 @@ public class Employee {
 
     private String name;
 
+    /**
+     * mappedBy indicate that the owner of the relationship is History.
+     * If cascade type is not given you cannot persist the target type (history).
+     */
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
+    private EmployeeHistory employeeHistory;
+
     Employee() {
     }
 
@@ -23,6 +30,23 @@ public class Employee {
 
     public String getName() {
         return name;
+    }
+
+    public EmployeeHistory getEmployeeHistory() {
+        return employeeHistory;
+    }
+
+    /**
+     * EmployeeHistory is the owner of the relationship.
+     * So when the relationship is updated via Employee,
+     * the owner should be notified about the relationship via setEmployee() method.
+     *
+     * To ensure the relationship update only via one way,
+     * made the setEmployee() visibility to package private.
+     */
+    public void setEmployeeHistory(EmployeeHistory employeeHistory) {
+        this.employeeHistory = employeeHistory;
+        employeeHistory.setEmployee(this);
     }
 
     @Override

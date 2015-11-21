@@ -19,7 +19,7 @@ public class EmployeeHistory implements Serializable{
         return employee;
     }
 
-    public void setEmployee(Employee employee) {
+    void setEmployee(Employee employee) {
         this.employee = employee;
     }
 

@@ -6,6 +6,9 @@ import org.manu.springjpa.derivedId.Employee;
 import org.manu.springjpa.derivedId.EmployeeHistory;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 public class DerivedIdTest extends PersistenceTests{
 
     @Test
@@ -14,15 +17,16 @@ public class DerivedIdTest extends PersistenceTests{
         // Given
         Employee e = new Employee(200L, "John");
         EmployeeHistory eh = new EmployeeHistory();
-        eh.setEmployee(e);
+        e.setEmployeeHistory(eh);
+
         // When
         em.persist(e);
-        em.persist(eh);
         em.flush();
         em.clear();
 
         // Then
         EmployeeHistory employeeHistory = em.find(EmployeeHistory.class, 200L);
+        assertThat(employeeHistory, notNullValue());
         System.out.println(employeeHistory);
     }
 
