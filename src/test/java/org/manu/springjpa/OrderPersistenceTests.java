@@ -1,8 +1,6 @@
 package org.manu.springjpa;
 
 import org.junit.Test;
-import org.manu.springjpa.derivedId.Employee;
-import org.manu.springjpa.derivedId.EmployeeHistory;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertEquals;
@@ -29,7 +27,7 @@ public class OrderPersistenceTests extends PersistenceTests {
         // Otherwise the query returns the existing order (and we didn't set the
         // parent in the item)...
         em.clear();
-        Order other = (Order) em.find(Order.class, order.getId());
+        Order other = em.find(Order.class, order.getId());
         assertEquals(1, other.getItems().size());
         assertEquals(other, other.getItems().iterator().next().getOrder());
     }
