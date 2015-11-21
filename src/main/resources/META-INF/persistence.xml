@@ -6,9 +6,9 @@
 
 	<persistence-unit name="application" transaction-type="RESOURCE_LOCAL">
 
-        <class>org.manu.springjpa.Item</class>
-        <class>org.manu.springjpa.Order</class>
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <!--<class>org.manu.springjpa.Item</class>-->
+        <!--<class>org.manu.springjpa.Order</class>-->
+		<!--<exclude-unlisted-classes>true</exclude-unlisted-classes>-->
 
 	</persistence-unit>
 

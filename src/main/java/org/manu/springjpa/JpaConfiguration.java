@@ -24,6 +24,7 @@ public class JpaConfiguration {
 	public Map<String, Object> jpaProperties() {
 		Map<String, Object> props = new HashMap<String, Object>();
 		props.put("hibernate.dialect", H2Dialect.class.getName());
+		props.put("hibernate.ejb.naming_strategy", "org.hibernate.cfg.ImprovedNamingStrategy");
 		return props;
 	}
 
