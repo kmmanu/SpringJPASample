@@ -5,11 +5,7 @@
              version="1.0">
 
 	<persistence-unit name="application" transaction-type="RESOURCE_LOCAL">
-
-        <!--<class>org.manu.springjpa.Item</class>-->
-        <!--<class>org.manu.springjpa.Order</class>-->
-		<!--<exclude-unlisted-classes>true</exclude-unlisted-classes>-->
-
+		<provider>org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider</provider>
 	</persistence-unit>
 
 </persistence>

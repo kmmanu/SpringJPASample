@@ -1,54 +1,85 @@
 package org.manu.springjpa;
 
-import org.hibernate.dialect.H2Dialect;
-import org.springframework.beans.factory.annotation.Value;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.annotation.Resource;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+import java.util.Properties;
 
 @Configuration
+@ComponentScan("org.manu.springjpa")
+@PropertySource("classpath:hibernate.properties")
+@EnableTransactionManagement()
 public class JpaConfiguration {
 
-	@Value("#{dataSource}")
-	private javax.sql.DataSource dataSource;
+    private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
+    private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
+    private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
+    private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
 
-	@Bean
-	public Map<String, Object> jpaProperties() {
-		Map<String, Object> props = new HashMap<String, Object>();
-		props.put("hibernate.dialect", H2Dialect.class.getName());
-		props.put("hibernate.ejb.naming_strategy", "org.hibernate.cfg.ImprovedNamingStrategy");
-		return props;
-	}
+    private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
+    private static final String PROPERTY_NAME_HIBERNATE_FORMAT_SQL = "hibernate.format_sql";
+    private static final String PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DELEGATOR = "hibernate.ejb.naming_strategy_delegator";
+    private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
+    private static final String PROPERTY_NAME_HIBERNATE_DBM2DDL_AUTO = "hibernate.hbm2ddl.auto";
+//    private static final String PROPERTY_NAME_HIBERNATE_IMPORT_FILES = "hibernate.hbm2ddl.import_files";
 
-	@Bean
-	public JpaVendorAdapter jpaVendorAdapter() {
-		HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
-		hibernateJpaVendorAdapter.setShowSql(true);
-		hibernateJpaVendorAdapter.setGenerateDdl(true);
-		hibernateJpaVendorAdapter.setDatabase(Database.H2);
-		return hibernateJpaVendorAdapter;
-	}
+    @Resource
+    private Environment env;
 
-	@Bean
-	public PlatformTransactionManager transactionManager() {
-		return new JpaTransactionManager( localContainerEntityManagerFactoryBean().getObject() );
-	}
+    @Bean(destroyMethod = "close")
+    public DataSource dataSource() throws Exception {
+        ComboPooledDataSource cpds = new ComboPooledDataSource();
 
-	@Bean
-	public LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean() {
-		LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
-		lef.setDataSource(this.dataSource);
-		lef.setJpaPropertyMap(this.jpaProperties());
-		lef.setJpaVendorAdapter(this.jpaVendorAdapter());
-		return lef;
-	}
+        cpds.setDriverClass(env.getProperty(PROPERTY_NAME_DATABASE_DRIVER));
+        cpds.setJdbcUrl(env.getProperty(PROPERTY_NAME_DATABASE_URL));
+        cpds.setUser(env.getProperty(PROPERTY_NAME_DATABASE_USERNAME));
+        cpds.setPassword(env.getProperty(PROPERTY_NAME_DATABASE_PASSWORD));
 
+        cpds.setMinPoolSize(5);
+        cpds.setAcquireIncrement(5);
+
+        return cpds;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) throws Exception {
+        JpaTransactionManager txManager = new JpaTransactionManager();
+        txManager.setEntityManagerFactory(entityManagerFactory);
+        return txManager;
+    }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() throws Exception {
+        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+        entityManagerFactoryBean.setDataSource(dataSource());
+        entityManagerFactoryBean.setPersistenceXmlLocation("META-INF/persistence.xml");
+        entityManagerFactoryBean.setPersistenceUnitName("application");
+        entityManagerFactoryBean.setJpaProperties(hibernateProperties());
+        return entityManagerFactoryBean;
+    }
+
+    private Properties hibernateProperties() {
+        Properties properties = new Properties();
+        properties.put(PROPERTY_NAME_HIBERNATE_DIALECT, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT));
+        properties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
+        properties.put(PROPERTY_NAME_HIBERNATE_FORMAT_SQL, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_FORMAT_SQL));
+        properties.put(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DELEGATOR, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_NAMING_STRATEGY_DELEGATOR));
+        properties.put(PROPERTY_NAME_HIBERNATE_DBM2DDL_AUTO, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DBM2DDL_AUTO));
+//        properties.put(PROPERTY_NAME_HIBERNATE_IMPORT_FILES, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_IMPORT_FILES));
+        return properties;
+    }
 }

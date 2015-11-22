@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-@ContextConfiguration(locations = "classpath:/META-INF/spring/app-context.xml")
+@ContextConfiguration(classes = JpaConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class PersistenceTests {
 
