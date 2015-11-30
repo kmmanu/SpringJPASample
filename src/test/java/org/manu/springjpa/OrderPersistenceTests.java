@@ -3,6 +3,8 @@ package org.manu.springjpa;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -11,7 +13,9 @@ public class OrderPersistenceTests extends PersistenceTests {
     @Transactional
     public void testSaveOrderWithItems() throws Exception {
         Order order = new Order();
-        order.addItem(new Item());
+        Item item = new Item();
+        item.setManufacturingDate(LocalDate.now());
+        order.addItem(item);
         em.persist(order);
         em.flush();
         assertNotNull(order.getId());

@@ -2,6 +2,7 @@
 package org.manu.springjpa;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 /**
  * An item in an order
@@ -23,6 +24,9 @@ public class Item {
 	private double price;
 	
 	private int quantity;
+
+
+	private LocalDate manufacturingDate;
 	
 	/**
 	 * @return the order
@@ -84,4 +88,11 @@ public class Item {
 		return id;
 	}
 
+    public LocalDate getManufacturingDate() {
+        return manufacturingDate;
+    }
+
+    public void setManufacturingDate(LocalDate manufacturingDate) {
+        this.manufacturingDate = manufacturingDate;
+    }
 }
